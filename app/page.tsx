@@ -230,7 +230,7 @@ export default function Home() {
                 icon: Users,
                 items: [
                   "Emergency medical request forms",
-                  "Live chat with medical staff",
+                  "AI medical assistant chat",
                   "Real-time vital monitoring",
                   "Digital prescriptions",
                 ],

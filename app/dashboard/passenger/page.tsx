@@ -7,17 +7,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Activity, Send, Download, Train } from "lucide-react"
+import { Activity, Send, Download, Train, Bot, MessageSquare, Stethoscope, AlertCircle, Heart } from "lucide-react"
+import Link from "next/link"
 import { useState } from "react"
 
 export default function PassengerDashboard() {
   const [activeTab, setActiveTab] = useState("overview")
   const [emergencyActive, setEmergencyActive] = useState(false)
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Dr. Smith", text: "How are you feeling?", time: "2:30 PM" },
-    { id: 2, sender: "You", text: "Better, thank you", time: "2:35 PM" },
-  ])
-  const [messageInput, setMessageInput] = useState("")
+  // Messages are now handled by the dedicated AI Assistant page
 
   // PNR states
   const [pnr, setPnr] = useState("")
@@ -38,13 +35,7 @@ export default function PassengerDashboard() {
     { id: 2, medication: "Vitamin D", dosage: "1000 IU", frequency: "Once daily", date: "2024-10-18" },
   ]
 
-  // Handle chat send
-  const handleSendMessage = () => {
-    if (messageInput.trim()) {
-      setMessages([...messages, { id: messages.length + 1, sender: "You", text: messageInput, time: "Now" }])
-      setMessageInput("")
-    }
-  }
+  // Chat functionality moved to dedicated AI Assistant page
 
   // Mock PNR Fetch
   const handleFetchPNR = () => {
@@ -71,7 +62,7 @@ export default function PassengerDashboard() {
         <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="emergency">🚨 Emergency</TabsTrigger>
-          <TabsTrigger value="messages">💬 Messages</TabsTrigger>
+          <TabsTrigger value="messages">🤖 AI Assistant</TabsTrigger>
           <TabsTrigger value="vitals">📊 Vitals</TabsTrigger>
           <TabsTrigger value="prescriptions">💊 Prescriptions</TabsTrigger>
         </TabsList>
@@ -231,37 +222,46 @@ export default function PassengerDashboard() {
 
         {/* ================= MESSAGES TAB ================= */}
         <TabsContent value="messages" className="space-y-6">
-          <Card className="border-border">
+          <Card className="border-blue-200 bg-blue-50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">💬 Live Chat with Medical Staff</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-blue-900">
+                <Bot className="w-6 h-6" />
+                🤖 AI Medical Assistant
+              </CardTitle>
+              <CardDescription className="text-blue-700">
+                Get instant health guidance from our AI-powered medical assistant
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="h-96 border border-border rounded-lg p-4 overflow-y-auto space-y-3 bg-muted/30">
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.sender === "You" ? "justify-end" : "justify-start"}`}>
-                    <div
-                      className={`max-w-xs px-4 py-2 rounded-lg ${
-                        msg.sender === "You"
-                          ? "bg-primary text-primary-foreground shadow-md"
-                          : "bg-muted text-foreground border border-border shadow-sm"
-                      }`}
-                    >
-                      <p className="text-sm">{msg.text}</p>
-                      <p className="text-xs opacity-70 mt-1">{msg.time}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="text-center py-8">
+                <Bot className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Dr. AI is Ready to Help</h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Our AI assistant can help with health questions, symptom assessment, and provide preliminary medical guidance.
+                </p>
+                <Link href="/dashboard/passenger/messages">
+                  <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2">
+                    Start Chat with Dr. AI
+                    <MessageSquare className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
               </div>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Type your message..."
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                />
-                <Button onClick={handleSendMessage} size="icon" className="bg-primary hover:bg-primary/90">
-                  <Send className="w-4 h-4" />
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="text-center p-4 bg-white rounded-lg border">
+                  <Stethoscope className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <h4 className="font-semibold text-sm">Health Assessment</h4>
+                  <p className="text-xs text-gray-600">Symptom evaluation and guidance</p>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg border">
+                  <AlertCircle className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                  <h4 className="font-semibold text-sm">Emergency Support</h4>
+                  <p className="text-xs text-gray-600">Immediate assistance protocols</p>
+                </div>
+                <div className="text-center p-4 bg-white rounded-lg border">
+                  <Heart className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                  <h4 className="font-semibold text-sm">24/7 Available</h4>
+                  <p className="text-xs text-gray-600">Always ready to help</p>
+                </div>
               </div>
             </CardContent>
           </Card>
