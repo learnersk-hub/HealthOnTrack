@@ -39,6 +39,7 @@ A comprehensive railway medical assistance platform providing AI-powered health 
 - **Type Checking**: TypeScript with strict mode
 - **Build Tool**: Next.js with Turbopack
 - **Version Control**: Git
+- **Documentation**: Mermaid flowcharts for workflow visualization
 
 ### Deployment & Performance
 - **Platform**: Vercel-ready (Next.js native)
@@ -85,6 +86,168 @@ HealthOnTrack/
 ```
 
 ## 🔄 Workflow & Architecture
+
+### **Platform Workflow Diagram**
+
+```mermaid
+flowchart TD
+    START([User Visits HealthOnTrack]) --> AUTH{Authenticated?}
+    
+    AUTH -->|No| LOGIN[Login/Register Page]
+    AUTH -->|Yes| ROLE{User Role?}
+    
+    LOGIN --> SIGNUP[Sign Up Form]
+    LOGIN --> SIGNIN[Sign In Form]
+    SIGNUP --> PROFILE[Complete Profile]
+    SIGNIN --> ROLE
+    PROFILE --> ROLE
+    
+    ROLE -->|Passenger| PASS_DASH[Passenger Dashboard]
+    ROLE -->|Doctor| DOC_DASH[Doctor Dashboard]
+    ROLE -->|Staff| STAFF_DASH[Staff Dashboard]
+    
+    %% Passenger Flow
+    PASS_DASH --> AI_CHAT[AI Medical Assistant]
+    PASS_DASH --> EMERGENCY[Emergency Request]
+    PASS_DASH --> VITALS[Health Monitoring]
+    PASS_DASH --> PRESCRIPTIONS[View Prescriptions]
+    
+    AI_CHAT --> VOICE{Use Voice Input?}
+    VOICE -->|Yes| SPEECH[Speech Recognition]
+    VOICE -->|No| TYPE[Type Message]
+    SPEECH --> AI_PROCESS[AI Processing]
+    TYPE --> AI_PROCESS
+    AI_PROCESS --> AI_RESPONSE[Dr. AI Response]
+    AI_RESPONSE --> FOLLOW_UP{Need Follow-up?}
+    FOLLOW_UP -->|Yes| AI_CHAT
+    FOLLOW_UP -->|No| PASS_DASH
+    
+    EMERGENCY --> EMG_FORM[Emergency Form]
+    EMG_FORM --> EMG_SUBMIT[Submit Emergency]
+    EMG_SUBMIT --> EMG_TRACK[Track Status]
+    EMG_TRACK --> EMG_RESOLVED{Resolved?}
+    EMG_RESOLVED -->|No| EMG_TRACK
+    EMG_RESOLVED -->|Yes| PASS_DASH
+    
+    VITALS --> RECORD_VITALS[Record Vital Signs]
+    RECORD_VITALS --> VITALS_CHART[View Charts]
+    VITALS_CHART --> PASS_DASH
+    
+    %% Doctor Flow
+    DOC_DASH --> VIEW_EMG[View Emergencies]
+    DOC_DASH --> PATIENT_LIST[Patient List]
+    DOC_DASH --> CREATE_PRESC[Create Prescriptions]
+    
+    VIEW_EMG --> RESPOND_EMG[Respond to Emergency]
+    RESPOND_EMG --> UPDATE_STATUS[Update Status]
+    UPDATE_STATUS --> DOC_DASH
+    
+    PATIENT_LIST --> PATIENT_DETAIL[Patient Details]
+    PATIENT_DETAIL --> VIEW_HISTORY[Medical History]
+    PATIENT_DETAIL --> CREATE_PRESC
+    VIEW_HISTORY --> PATIENT_DETAIL
+    
+    CREATE_PRESC --> PRESC_FORM[Prescription Form]
+    PRESC_FORM --> SAVE_PRESC[Save Prescription]
+    SAVE_PRESC --> DOC_DASH
+    
+    %% Staff Flow
+    STAFF_DASH --> MONITOR_TRAIN[Monitor Train]
+    STAFF_DASH --> EMG_ALERTS[Emergency Alerts]
+    STAFF_DASH --> COORD_RESPONSE[Coordinate Response]
+    
+    EMG_ALERTS --> ASSESS_EMG[Assess Emergency]
+    ASSESS_EMG --> DISPATCH{Dispatch Needed?}
+    DISPATCH -->|Yes| SEND_HELP[Send Medical Help]
+    DISPATCH -->|No| PROVIDE_GUIDANCE[Provide Guidance]
+    SEND_HELP --> STAFF_DASH
+    PROVIDE_GUIDANCE --> STAFF_DASH
+    
+    %% Common Actions
+    PASS_DASH --> LOGOUT[Logout]
+    DOC_DASH --> LOGOUT
+    STAFF_DASH --> LOGOUT
+    LOGOUT --> START
+    
+    %% Styling
+    classDef startEnd fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef dashboard fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef emergency fill:#ffebee,stroke:#b71c1c,stroke-width:2px
+    
+    class START,LOGOUT startEnd
+    class AUTH,ROLE,VOICE,FOLLOW_UP,EMG_RESOLVED,DISPATCH decision
+    class PASS_DASH,DOC_DASH,STAFF_DASH dashboard
+    class EMERGENCY,EMG_FORM,EMG_SUBMIT,EMG_TRACK,EMG_ALERTS,ASSESS_EMG emergency
+```
+
+### **Detailed User Journey Flows**
+
+#### **🚂 Passenger Journey**
+```mermaid
+flowchart LR
+    A[Board Train] --> B[Access HealthOnTrack]
+    B --> C{Health Issue?}
+    C -->|Minor| D[Consult AI Assistant]
+    C -->|Serious| E[Emergency Request]
+    C -->|Routine| F[Check Vitals]
+    
+    D --> G[Voice/Text Input]
+    G --> H[AI Diagnosis]
+    H --> I{Satisfied?}
+    I -->|No| D
+    I -->|Yes| J[Follow AI Advice]
+    
+    E --> K[Fill Emergency Form]
+    K --> L[Submit Request]
+    L --> M[Wait for Response]
+    M --> N[Receive Help]
+    
+    F --> O[Record Measurements]
+    O --> P[View Trends]
+    P --> Q[Share with Doctor]
+```
+
+#### **👨‍⚕️ Doctor Workflow**
+```mermaid
+flowchart LR
+    A[Login to System] --> B[View Dashboard]
+    B --> C{New Alerts?}
+    C -->|Yes| D[Review Emergency]
+    C -->|No| E[Check Patient List]
+    
+    D --> F[Assess Severity]
+    F --> G{Critical?}
+    G -->|Yes| H[Immediate Response]
+    G -->|No| I[Provide Guidance]
+    H --> J[Coordinate with Staff]
+    I --> K[Update Status]
+    
+    E --> L[Select Patient]
+    L --> M[Review History]
+    M --> N[Create Prescription]
+    N --> O[Send to Patient]
+```
+
+#### **🚨 Emergency Response Flow**
+```mermaid
+flowchart TD
+    A[Emergency Reported] --> B[Alert All Staff]
+    B --> C[Assess Location]
+    C --> D[Determine Response]
+    D --> E{Medical Staff Available?}
+    E -->|Yes| F[Dispatch Doctor]
+    E -->|No| G[Remote Consultation]
+    F --> H[On-site Treatment]
+    G --> I[AI-Assisted Guidance]
+    H --> J[Follow-up Care]
+    I --> K{Condition Stable?}
+    K -->|Yes| L[Continue Monitoring]
+    K -->|No| M[Emergency Stop]
+    L --> N[Regular Check-ins]
+    M --> O[External Medical Help]
+```
 
 ### 1. **User Authentication Flow**
 ```javascript
@@ -558,12 +721,34 @@ npm run db:reset     # Reset database
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 📊 Workflow Diagrams
+
+The flowcharts in this README are created using **Mermaid**, a markdown-based diagramming tool that renders beautiful flowcharts directly in GitHub and most modern documentation platforms.
+
+### **Viewing Flowcharts**
+- **GitHub**: Flowcharts render automatically in the README
+- **VS Code**: Install the "Mermaid Preview" extension
+- **Online**: Use [Mermaid Live Editor](https://mermaid.live/) to view/edit
+
+### **Editing Flowcharts**
+To modify the workflow diagrams:
+
+1. **Online Editor**: Copy the mermaid code to [mermaid.live](https://mermaid.live/)
+2. **Local Development**: Use VS Code with Mermaid extensions
+3. **Documentation**: Update the README.md file directly
+
+### **Flowchart Types Used**
+- **Main Workflow**: Complete platform user journey
+- **Role-Specific Flows**: Passenger, Doctor, Staff workflows  
+- **Feature Flows**: Emergency response, AI chat, health monitoring
+
 ## 🆘 Support
 
 For support and questions:
 - Create an issue in the GitHub repository
 - Contact the development team
 - Check the documentation in the `/docs` folder
+- View workflow diagrams for understanding user journeys
 
 ---
 
