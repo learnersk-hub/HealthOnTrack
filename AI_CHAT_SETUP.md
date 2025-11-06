@@ -34,7 +34,6 @@ The AI is configured with a comprehensive healthcare system prompt that:
    - Symptom onset timing
    - Recent medications
    - Known allergies/conditions
-   - Train location for emergencies
 
 3. **Provides Appropriate Guidance**:
    - Clear, simple language
