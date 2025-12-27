@@ -24,8 +24,10 @@ export default function EmergencyPage() {
 
   const navigation = [
     { label: "Dashboard", href: "/dashboard/passenger", icon: <Activity className="w-5 h-5" /> },
-     { label: "message", href: "/dashboard/passenger/messages", icon: <Activity className="w-5 h-5" /> },
-    
+    { label: "AI Assistant", href: "/dashboard/passenger/messages", icon: <MessageSquare className="w-5 h-5" /> },
+    { label: "Emergency Request", href: "/dashboard/passenger/emergency", icon: <AlertCircle className="w-5 h-5" /> },
+    { label: "Vitals", href: "/dashboard/passenger/vitals", icon: <Heart className="w-5 h-5" /> },
+    { label: "Prescriptions", href: "/dashboard/passenger/prescriptions", icon: <FileText className="w-5 h-5" /> },
   ]
 
   // Mock fetch

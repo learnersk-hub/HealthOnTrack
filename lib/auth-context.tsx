@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Load user from localStorage on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("healthcare_user")
+    const storedUser = localStorage.getItem("healthontrack_user")
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser))
@@ -42,43 +42,71 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string, role: UserRole) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, role }),
+      })
 
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      name: email.split("@")[0],
-      email,
-      role,
-      trainId: "TR-001",
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Login failed')
+      }
+
+      const userData = await response.json()
+      const newUser: User = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        trainId: userData.train_id,
+      }
+
+      setUser(newUser)
+      localStorage.setItem("healthontrack_user", JSON.stringify(newUser))
+    } catch (error) {
+      console.error('Login error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
     }
-
-    setUser(newUser)
-    localStorage.setItem("healthcare_user", JSON.stringify(newUser))
-    setIsLoading(false)
   }
 
   const signup = async (name: string, email: string, password: string, role: UserRole) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password, role }),
+      })
 
-    const newUser: User = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      role,
-      trainId: "TR-001",
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Signup failed')
+      }
+
+      // Don't automatically log in after signup
+      // Just return success
+      return await response.json()
+    } catch (error) {
+      console.error('Signup error:', error)
+      throw error
+    } finally {
+      setIsLoading(false)
     }
-
-    setUser(newUser)
-    localStorage.setItem("healthcare_user", JSON.stringify(newUser))
-    setIsLoading(false)
   }
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem("healthcare_user")
+    localStorage.removeItem("healthontrack_user")
   }
 
   return <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>{children}</AuthContext.Provider>

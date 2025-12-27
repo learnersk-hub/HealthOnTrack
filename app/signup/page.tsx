@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { Heart } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
@@ -15,7 +16,8 @@ export default function SignupPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { signup } = useAuth()
-  const role = (searchParams.get("role") || "passenger") as "passenger" | "attendant" | "doctor" | "admin"
+  const initialRole = searchParams.get("role") as "passenger" | "attendant" | "doctor" | "admin" | null
+  const [selectedRole, setSelectedRole] = useState<string>(initialRole || "")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -23,16 +25,14 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const roleNames: Record<string, string> = {
-    passenger: "Passenger",
-    attendant: "Attendant / Paramedic",
-    doctor: "Doctor",
-    admin: "Railway Admin",
-  }
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+
+    if (!selectedRole) {
+      setError("Please select a role")
+      return
+    }
 
     // Validate form
     if (!name.trim()) {
@@ -58,18 +58,13 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
-      await signup(name, email, password, role)
-      // Route to appropriate dashboard
-      const dashboardRoutes: Record<string, string> = {
-        passenger: "/dashboard/passenger",
-        attendant: "/dashboard/attendant",
-        doctor: "/dashboard/doctor",
-        admin: "/dashboard/admin",
-      }
-      router.push(dashboardRoutes[role] || "/dashboard/passenger")
-    } catch (error) {
+      // Just signup, don't login
+      await signup(name, email, password, selectedRole as "passenger" | "attendant" | "doctor" | "admin")
+      // After successful signup, redirect to login page
+      router.push("/login?role=" + selectedRole + "&signup=success")
+    } catch (error: any) {
       console.error("Signup failed:", error)
-      setError("Signup failed. Please try again.")
+      setError(error.message || "Signup failed. Please try again.")
       setLoading(false)
     }
   }
@@ -81,10 +76,12 @@ export default function SignupPage() {
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
               <Heart className="w-6 h-6 text-primary" />
-              <span className="text-xl font-bold text-primary">Healthcare on the Move</span>
+              <span className="text-xl font-bold text-primary">HealthOnTrack</span>
             </div>
             <CardTitle>Create Account</CardTitle>
-            <CardDescription>Sign up as {roleNames[role] || "User"}</CardDescription>
+            <CardDescription>
+              Create your account to access healthcare services
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSignup} className="space-y-4">
@@ -93,6 +90,20 @@ export default function SignupPage() {
                   {error}
                 </div>
               )}
+              <div className="space-y-2">
+                <Label htmlFor="role">Select Role</Label>
+                <Select value={selectedRole} onValueChange={setSelectedRole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="passenger">Passenger</SelectItem>
+                    <SelectItem value="attendant">Attendant / Paramedic</SelectItem>
+                    <SelectItem value="doctor">Doctor</SelectItem>
+                    <SelectItem value="admin">Railway Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -137,21 +148,21 @@ export default function SignupPage() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={loading || !selectedRole}>
                 {loading ? "Creating account..." : "Sign Up"}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">
               <p className="text-muted-foreground">
                 Already have an account?{" "}
-                <Link href={`/login?role=${role}`} className="text-primary hover:underline">
+                <Link href="/login" className="text-primary hover:underline">
                   Sign in
                 </Link>
               </p>
             </div>
             <div className="mt-4 pt-4 border-t border-border">
               <Link href="/" className="text-sm text-primary hover:underline">
-                ← Back to role selection
+                ← Back to home
               </Link>
             </div>
           </CardContent>

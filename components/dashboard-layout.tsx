@@ -71,7 +71,7 @@ export function DashboardLayout({ children, title, role, navigation }: Dashboard
                   <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                     <Heart className="w-6 h-6 text-primary" />
                   </motion.div>
-                  <span className="font-bold text-sm text-sidebar-foreground">HOM</span>
+                  <span className="font-bold text-sm text-sidebar-foreground">HOME</span>
                 </Link>
               </motion.div>
             )}

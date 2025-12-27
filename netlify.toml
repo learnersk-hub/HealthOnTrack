@@ -1,0 +1,15 @@
+[build]
+  command = "node scripts/netlify-build.js && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20.9.0"
+  NPM_FLAGS = "--production=false"
+  NETLIFY = "true"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[functions]
+  external_node_modules = ["better-sqlite3"]
+  node_bundler = "esbuild"
